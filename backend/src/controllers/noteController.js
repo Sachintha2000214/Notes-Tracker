@@ -16,21 +16,27 @@ export const createNote = async (req, res) => {
 };
 
 export const getAllNotes = async (req, res) => {
-    const userId = req.query.userId; // Use req.query instead of req.params
+    const userId = req.query.userId;
+    const category = req.query.category;
     console.log("User ID:", userId);
+    console.log("Category:", category);
 
     if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
     }
 
     try {
-        const allNotes = await Note.find({ userId });
+        const query = { userId };
+        if (category) {
+            query.category = { $regex: category, $options: 'i' };
+        }
+        const allNotes = await Note.find(query);
         res.json(allNotes);
     } catch (error) {
+        console.error("Error fetching notes:", error);
         res.status(500).json({ error: "Failed to fetch notes" });
     }
 };
-
 
 export const getNotesByCategory = async (req, res) => {
     const category = req.params.category;
@@ -45,5 +51,46 @@ export const getNotesByCategory = async (req, res) => {
         res.json(filteredNotes);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch notes by category' });
+    }
+};
+
+export const updateNote = async (req, res) => {
+    const { id } = req.params;
+    const { title, content, category } = req.body;
+
+    if (!title || !content || !category) {
+        return res.status(400).json({ error: 'Title, content, and category are required' });
+    }
+
+    try {
+        const updatedNote = await Note.findByIdAndUpdate(
+            id,
+            { title, content, category },
+            { new: true }
+        );
+
+        if (!updatedNote) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        res.status(200).json(updatedNote);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update note' });
+    }
+};
+
+export const deleteNote = async (req, res) => {
+    const { id } = req.params; // Get the note ID from the URL
+
+    try {
+        const deletedNote = await Note.findByIdAndDelete(id);
+
+        if (!deletedNote) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        res.status(200).json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete note' });
     }
 };

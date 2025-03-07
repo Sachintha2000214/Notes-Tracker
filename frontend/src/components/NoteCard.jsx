@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import NoteModal from "./NoteModal"; // Import your NoteModal component
 
-const NoteCard = ({ note, onDelete, onEdit }) => {
+const NoteCard = ({ note, onEdit, onDelete }) => {
+
   return (
     <div className="bg-white p-4 rounded shadow-lg">
-      {/* Note Title */}
+
       <h2 className="text-xl font-bold">{note.category}</h2>
       <h2 className="text-xl font-bold">{note.title}</h2>
 
-      {/* Note Description */}
       <p className="text-gray-700">{note.content}</p>
 
-      {/* Action Buttons */}
       <div className="flex justify-end mt-2">
-        {/* Edit Button */}
+
         <button
           onClick={() => onEdit(note)}
           className="text-blue-500 mr-2 hover:text-blue-700"
@@ -21,14 +21,22 @@ const NoteCard = ({ note, onDelete, onEdit }) => {
           <FaEdit />
         </button>
 
-        {/* Delete Button */}
         <button
-          onClick={() => onDelete(note)}
+          onClick={() => onDelete(note._id)}
           className="text-red-500 hover:text-red-700"
         >
           <FaTrash />
         </button>
       </div>
+
+      {/* {isModalOpen && (
+        <NoteModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSave={handleSave}
+          noteToEdit={selectedNote}
+        />
+      )} */}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
 
@@ -46,6 +46,8 @@ const Navbar = () => {
         type="text"
         placeholder="Search notes..."
         className="bg-gray-600 px-4 py-2 rounded"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
 
       {/* Right Side - User Info & Auth Links */}
