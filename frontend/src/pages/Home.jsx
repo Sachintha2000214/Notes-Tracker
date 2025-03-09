@@ -2,6 +2,7 @@
 //Connect with backend to crud operaions 
 
 import React, { useState, useEffect, useCallback } from "react";
+import axios from 'axios';
 import Navbar from "../components/Navbar";
 import NoteModal from "../components/NoteModal";
 import NoteCard from "../components/NoteCard";
@@ -32,63 +33,55 @@ const Home = () => {
   }, []);
 
   const fetchNotes = useCallback(async () => {
-    if (!userId) return; 
-
+    if (!userId) return; // Wait until userId is available
+  
     try {
-      const response = await fetch(`http://127.0.0.1:5555/notes?userId=${userId}&category=${searchQuery}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch notes");
-      }
-      const data = await response.json();
-      setNotes(data);
+      const response = await axios.get('http://127.0.0.1:5555/notes', {
+        params: {
+          userId: userId,
+          category: searchQuery,
+        },
+      });
+  
+      // Axios automatically parses the JSON response, so you can access it via `response.data`
+      setNotes(response.data);
     } catch (error) {
       console.error("Error fetching notes:", error);
     }
   }, [userId, searchQuery]);
 
-
   useEffect(() => {
     fetchNotes();
   }, [fetchNotes]);
-  const handleSave = async (note) => {
 
+const handleSave = async (note) => {
     const url = selectedNote && selectedNote._id 
         ? `http://127.0.0.1:5555/notes/${selectedNote._id}` 
         : 'http://127.0.0.1:5555/notes';
-    const method = selectedNote && selectedNote._id ? 'PUT' : 'POST';
+    const method = selectedNote && selectedNote._id ? 'put' : 'post';
 
     try {
-        const response = await fetch(url, {
-            method,
+        const response = await axios[method](url, note, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(note),
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to save note');
-        }
-
-        const savedNote = await response.json();
-        console.log('Note saved successfully:', savedNote);
-
         fetchNotes();
         setModalOpen(false);
         setSelectedNote(null);
     } catch (error) {
-        console.error('Error saving note:', error.message || error);
+        console.error('Error saving note:', error.response?.data?.error || error.message || error);
     }
 };
-  const handleDelete = async (noteId) => {
-    try {
-      await fetch(`http://127.0.0.1:5555/notes/${noteId}`, { method: 'DELETE' });
-      fetchNotes(); 
-    } catch (error) {
-      console.error('Error deleting note:', error);
-    }
-  };
+
+const handleDelete = async (noteId) => {
+  try {
+      await axios.delete(`http://127.0.0.1:5555/notes/${noteId}`);
+      fetchNotes();
+  } catch (error) {
+      console.error('Error deleting note:', error.response?.data?.error || error.message || error);
+  }
+};
 
   const handleEdit = (note) => {
     setSelectedNote(note);
