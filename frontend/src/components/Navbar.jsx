@@ -43,7 +43,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
 
       <input
         type="text"
-        placeholder="Search notes..."
+        placeholder="Search notes by category..."
         className="bg-gray-600 px-4 py-2 rounded"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

@@ -114,16 +114,21 @@ const Home = () => {
 
         <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <div>
-          {notes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
+          {notes.length > 0 ? (
+            notes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))
+          ) : (
+            <p style={{ textAlign: "center", fontWeight: "bold", marginTop: "20px" }}>
+              No results found.
+            </p>
+          )}
         </div>
-
         <button
           onClick={() => setModalOpen(true)}
           className="fixed right-4 bottom-4 text-2xl bg-teal-500 text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-teal-600 transition"
