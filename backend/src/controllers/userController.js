@@ -1,23 +1,20 @@
-import User, { findOne } from '../models/User';
+import { User } from '../models/userModel.js';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, registerNumber, email, password } = req.body;
-        if (!name || !registerNumber || !email || !password) {
-            return res.status(400).json({ message: 'Send all required fields: name, registerNumber, email, password' });
+        const { name,registerNumber, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).send({
+                message: 'Send all required fields: name, email, password'
+            });
         }
-        const existingUser = await findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-        const user = new User({ name, registerNumber, email, password });
+        const user = new User({ name,registerNumber, email, password });
         await user.save();
         const token = user.generateAuthToken();
-        res.status(201).json({ token, message: 'User registered successfully' });
-
+        res.status(201).json({ token });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ message: 'Server error' });
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
     }
 };
 

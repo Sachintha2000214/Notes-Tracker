@@ -1,10 +1,9 @@
 //Connect with the database
 
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import { mongoDBURL } from '../../config';
+import { mongoDBURL } from '../../config.js';
 
-dotenv.config();
+
 const connectDB = async () => {
     try {
         await mongoose.connect(mongoDBURL, {
