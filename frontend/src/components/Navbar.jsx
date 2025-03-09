@@ -1,3 +1,7 @@
+//Extract the token from session storage and get the username of the logged user 
+//Handle user logout by destroying toke from the session 
+//Search accoring the category 
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -7,41 +11,36 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-
     if (!token) {
-      // If no token is found, redirect to login
       navigate("/");
     } else {
       try {
-        // Decode the token to extract user details
         const decodedToken = JSON.parse(atob(token.split(".")[1]));
         setUserDetails(decodedToken);
       } catch (error) {
         console.error("Error decoding token:", error);
-        navigate("/"); // Redirect to login on error
+        navigate("/"); 
       }
     }
   }, [navigate]);
 
-  // Logout function
   const handleLogout = () => {
-    // Clear the session storage
+   
     sessionStorage.removeItem("token");
-    navigate("/"); // Redirect to login page after logout
+    navigate("/"); 
   };
 
   if (!userDetails) {
-    return null; // Return null if userDetails is not available yet
+    return null; 
   }
 
   return (
     <nav className="bg-gray-800 p-4 text-white flex justify-between items-center">
-      {/* Left Side - Logo */}
+   
       <div className="text-xl font-bold">
-        <Link to="/">NoteApp</Link>
+        <Link to="/home">Note Tracker</Link>
       </div>
 
-      {/* Center - Search Bar */}
       <input
         type="text"
         placeholder="Search notes..."
@@ -50,9 +49,8 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      {/* Right Side - User Info & Auth Links */}
       <div className="flex items-center">
-        <span className="mr-4">{userDetails.name}</span> {/* Display username */}
+        <span className="mr-4">{userDetails.name}</span> 
 
         <button
           onClick={handleLogout}

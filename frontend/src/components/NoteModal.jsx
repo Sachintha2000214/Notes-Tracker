@@ -1,3 +1,5 @@
+//Create and Update notes 
+
 import React, { useEffect, useState } from "react";
 
 const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
@@ -43,7 +45,6 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
         <h2 className="text-xl font-bold mb-4">{noteToEdit ? 'Edit Note' : 'Add New Note'}</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Category Selection */}
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -57,7 +58,6 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
             <option value="Other">Other</option>
           </select>
 
-          {/* Note Title */}
           <input
             type="text"
             value={title}
@@ -65,8 +65,6 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
             placeholder="Note Title"
             className="border p-2 w-full mb-4"
           />
-
-          {/* Note Description */}
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -74,13 +72,10 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
             className="border p-2 w-full mb-4"
           />
 
-          {/* Submit Button */}
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">
             {noteToEdit ? 'Update Note' : 'Add Note'}
           </button>
         </form>
-
-        {/* Cancel Button */}
         <button onClick={onClose} className="mt-4 text-red-500 w-full">
           Cancel
         </button>

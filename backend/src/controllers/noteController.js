@@ -38,22 +38,6 @@ export const getAllNotes = async (req, res) => {
     }
 };
 
-export const getNotesByCategory = async (req, res) => {
-    const category = req.params.category;
-
-    try {
-        const filteredNotes = await Note.find({ category: category.toLowerCase() });
-
-        if (filteredNotes.length === 0) {
-            return res.status(404).json({ error: 'No notes found for this category' });
-        }
-
-        res.json(filteredNotes);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch notes by category' });
-    }
-};
-
 export const updateNote = async (req, res) => {
     const { id } = req.params;
     const { title, content, category } = req.body;
@@ -80,7 +64,7 @@ export const updateNote = async (req, res) => {
 };
 
 export const deleteNote = async (req, res) => {
-    const { id } = req.params; // Get the note ID from the URL
+    const { id } = req.params; 
 
     try {
         const deletedNote = await Note.findByIdAndDelete(id);

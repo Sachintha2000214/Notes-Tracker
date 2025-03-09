@@ -1,3 +1,6 @@
+//Get note details according to the user 
+//Connect with backend to crud operaions 
+
 import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import NoteModal from "../components/NoteModal";
@@ -9,21 +12,6 @@ const Home = () => {
   const [userId, setUserId] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const fetchNotes = useCallback(async () => {
-    if (!userId) return; // Wait until userId is available
-
-    try {
-      const response = await fetch(`http://127.0.0.1:5555/notes?userId=${userId}&category=${searchQuery}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch notes");
-      }
-      const data = await response.json();
-      setNotes(data);
-    } catch (error) {
-      console.error("Error fetching notes:", error);
-    }
-  }, [userId, searchQuery]);
 
   useEffect(() => {
     const fetchUserIdFromToken = () => {
@@ -43,12 +31,25 @@ const Home = () => {
     fetchUserIdFromToken();
   }, []);
 
+  const fetchNotes = useCallback(async () => {
+    if (!userId) return; 
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5555/notes?userId=${userId}&category=${searchQuery}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch notes");
+      }
+      const data = await response.json();
+      setNotes(data);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  }, [userId, searchQuery]);
+
 
   useEffect(() => {
     fetchNotes();
   }, [fetchNotes]);
-
-
   const handleSave = async (note) => {
 
     const url = selectedNote && selectedNote._id 
@@ -80,61 +81,64 @@ const Home = () => {
         console.error('Error saving note:', error.message || error);
     }
 };
-
   const handleDelete = async (noteId) => {
     try {
       await fetch(`http://127.0.0.1:5555/notes/${noteId}`, { method: 'DELETE' });
-      fetchNotes(); // Refresh the notes after deletion
+      fetchNotes(); 
     } catch (error) {
       console.error('Error deleting note:', error);
     }
   };
 
-  // Open modal for editing a note
   const handleEdit = (note) => {
     setSelectedNote(note);
     setModalOpen(true);
   };
 
-  // Close modal
   const handleModalClose = () => {
     setModalOpen(false);
     setSelectedNote(null);
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+    <div
+      className="relative min-h-screen"
+      style={{
+        backgroundImage: "url('/image4.jpg')", 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        filter: "brightness(0.8)", 
+      }}
+    >
+      <div className="relative z-10 min-h-screen w-full bg-gray-100 bg-opacity-75">
 
-      <div>
-      {notes.map((note) => (
-        <NoteCard
-          key={note.id}
-          note={note}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      ))}
+        <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <div>
+          {notes.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => setModalOpen(true)}
+          className="fixed right-4 bottom-4 text-2xl bg-teal-500 text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-teal-600 transition"
+        >
+          +
+        </button>
+        {isModalOpen && (
+          <NoteModal
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            onSave={handleSave}
+            noteToEdit={selectedNote}
+          />
+        )}
       </div>
-
-      {/* Floating Button to Open Modal */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="fixed right-4 bottom-4 text-2xl bg-teal-500 text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-teal-600 transition"
-      >
-        +
-      </button>
-
-      {/* Conditional Rendering of Note Modal */}
-
-      {isModalOpen && (
-        <NoteModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          onSave={handleSave}
-          noteToEdit={selectedNote}
-        />
-      )}
     </div>
   );
 };
